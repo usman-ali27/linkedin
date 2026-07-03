@@ -197,7 +197,7 @@ function Feed({}: FeedProps) {
               <Button
                 className="ml-auto rounded-full"
                 onClick={async () => {
-                  await createPost(postDraft);
+                  await createPost(postDraft, user);
                 }}
                 disabled={!postDraft.trim()}
               >
@@ -294,7 +294,7 @@ function Feed({}: FeedProps) {
                   <Button
                     variant={liked ? "subtle" : "ghost"}
                     className="rounded-full"
-                    onClick={() => onToggleLike(post.id)}
+                    onClick={() => toggleLike(post.id)}
                   >
                     <ThumbsUp
                       className={`h-4 w-4 ${liked ? "fill-current" : ""}`}
@@ -350,14 +350,14 @@ function Feed({}: FeedProps) {
                       <Textarea
                         value={commentDrafts[post.id] ?? ""}
                         onChange={(event) =>
-                          setCommentDrafts(post.id, event.target.value)
+                          setCommentDraft(post.id, event.target.value)
                         }
                         placeholder="Write a thoughtful comment..."
                         className="min-h-[88px] rounded-2xl border-white bg-white"
                       />
                       <div className="mt-3 flex justify-end">
                         <Button
-                          onClick={() => onAddComment(post.id)}
+                          onClick={() => addComment(post.id, user)}
                           disabled={!commentDrafts[post.id]?.trim()}
                           className="rounded-full"
                         >

@@ -4,7 +4,7 @@ import {
   getFeed,
   toggleLike,
 } from "../controllers/post.controller.ts";
-import { protect } from "../../middleware/auth.middleware.ts";
+import { protect } from "../middleware/auth.middleware.ts";
 
 const router = Router();
 

@@ -6,7 +6,7 @@ import {
   refresh,
   register,
 } from "../controllers/auth.controller.ts";
-import { protect } from "../../middleware/auth.middleware.ts";
+import { protect } from "../middleware/auth.middleware.ts";
 const router = Router();
 
 router.post("/register", register);

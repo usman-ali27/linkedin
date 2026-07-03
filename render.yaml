@@ -1,7 +1,7 @@
 services:
   - type: web
     name: linkedin
-    dir: ./server
+    rootDir: ./server # ← was "dir", which Render doesn't recognize
     buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npm start
     envVars:

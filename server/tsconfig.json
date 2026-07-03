@@ -13,5 +13,5 @@
     "rewriteRelativeImportExtensions": true,
     "outDir": "dist"
   },
-  "include": ["**/*.ts", "**/*.d.ts"] 
+  "include": ["src/**/*.ts"]
 }

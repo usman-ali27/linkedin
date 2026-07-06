@@ -6,15 +6,15 @@ import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const ACCESS_TOKEN_TTL = "15m";
-const REFRESH_TOKEN_TTL_DAYS = 7;
+const REFRESH_TOKEN_TTL_DAYS = 1;
 const isProduction = process.env.NODE_ENV === "production";
 
 const cookieOptions = {
   httpOnly: true,
   secure: isProduction,
-  sameSite: "lax" as const,
+  sameSite: isProduction ? "none" : "lax",
   path: "/",
-};
+} as const;
 
 const setAuthCookies = (
   res: Response,
@@ -120,7 +120,7 @@ export const register = async (req: Request, res: Response) => {
       data: { fullName, email, password: hashPassword },
     });
 
-    await issueTokens(res, user);
+    const authTokens = await issueTokens(res, user);
 
     res.status(201).json({
       message: "User registered successfully",
@@ -150,7 +150,7 @@ export const login = async (req: Request, res: Response) => {
         .json({ message: "Password is wrong", success: false });
     }
 
-    await issueTokens(res, user);
+    const authTokens = await issueTokens(res, user);
 
     res.json({
       message: "Login successful",
@@ -235,7 +235,7 @@ export const refresh = async (req: Request, res: Response) => {
       data: { revokedAt: new Date() },
     });
 
-    await issueTokens(res, user);
+    const authTokens = await issueTokens(res, user);
 
     res.json({
       message: "Token refreshed",

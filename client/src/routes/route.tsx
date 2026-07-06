@@ -69,19 +69,49 @@ export function AppRoutes() {
   );
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedUser = window.localStorage.getItem("user");
+
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        window.localStorage.removeItem("user");
+      }
+      setAuthenticated(true);
+    }
+  }, [setAuthenticated, setUser]);
+
+  useEffect(() => {
     let isMounted = true;
 
     const checkSession = async () => {
       try {
         const response = await api.get("/auth/me");
         if (isMounted) {
-          localStorage.setItem("user", JSON.stringify(response.data.user));
+          window.localStorage.setItem(
+            "user",
+            JSON.stringify(response.data.user),
+          );
           setUser(response.data.user);
           setAuthenticated(true);
         }
       } catch {
         if (isMounted) {
-          localStorage.removeItem("user");
+          const storedUser = window.localStorage.getItem("user");
+
+          if (storedUser) {
+            try {
+              setUser(JSON.parse(storedUser));
+            } catch {
+              window.localStorage.removeItem("user");
+            }
+            setAuthenticated(true);
+            return;
+          }
+
+          window.localStorage.removeItem("user");
           setUser(null);
           setAuthenticated(false);
         }

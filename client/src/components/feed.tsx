@@ -75,7 +75,11 @@ function Feed({}: FeedProps) {
   const toggleLike = useAppStore((state) => state.toggleLike);
   const addComment = useAppStore((state) => state.addComment);
 
+  const [selectedMedia, setSelectedMedia] = useState<{ url: string; type: string } | null>(null);
+
+
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const isLoadingRef = useRef(false);
   const displayName = user?.fullName?.trim() || userProfile.name;
   const roleLabel = user?.role
     ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
@@ -83,15 +87,23 @@ function Feed({}: FeedProps) {
   const initials = getInitials(displayName);
 
   useEffect(() => {
-    if (!hasMore || isLoadingMore) return;
+    isLoadingRef.current = isLoadingMore;
+  }, [isLoadingMore]);
+
+  useEffect(() => {
+    if (!hasMore) return;
 
     const target = loadMoreRef.current;
     if (!target) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
-          void loadFeedPage(true);
+        const entry = entries[0];
+        if (entry?.isIntersecting && !isLoadingRef.current) {
+          isLoadingRef.current = true;
+          void loadFeedPage(true).finally(() => {
+            isLoadingRef.current = false;
+          });
         }
       },
       { rootMargin: "200px" },
@@ -99,7 +111,7 @@ function Feed({}: FeedProps) {
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [hasMore, isLoadingMore, loadFeedPage]);
+  }, [hasMore, loadFeedPage]);
 
   return (
     <>
@@ -176,6 +188,26 @@ function Feed({}: FeedProps) {
                 className="min-h-[96px] flex-1 rounded-3xl border-slate-200 bg-slate-50"
               />
             </div>
+
+            {/* Live Media Preview Box */}
+            {selectedMedia && (
+              <div className="relative mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-950">
+                <Button 
+                  variant="destructive" 
+                  size="icon" 
+                  className="absolute right-3 top-3 z-10 h-8 w-8 rounded-full"
+                  onClick={clearSelectedMedia}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+                {selectedMedia.type.startsWith("video/") ? (
+                  <video src={selectedMedia.url} controls className="max-h-72 w-full object-contain" />
+                ) : (
+                  <img src={selectedMedia.url} alt="Upload Preview" className="max-h-72 w-full object-contain" />
+                )}
+              </div>
+            )}
+
             <div className="mt-4 flex flex-wrap gap-3">
               {(
                 [

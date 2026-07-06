@@ -2,13 +2,6 @@ import "dotenv/config";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { PrismaClient } from "../generated/prisma/client.ts";
 
-console.log("DB CONFIG CHECK:", {
-  host: process.env.DATABASE_HOST,
-  port: process.env.DATABASE_PORT,
-  user: process.env.DATABASE_USER,
-  hasPassword: Boolean(process.env.DATABASE_PASSWORD),
-  database: process.env.DATABASE_NAME,
-});
 
 const adapter = new PrismaMariaDb({
   host: process.env.DATABASE_HOST!,

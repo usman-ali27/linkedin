@@ -12,9 +12,15 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+app.set("trust proxy", 1);
+
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://linkedin-orpin-five.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://linkedin-orpin-five.vercel.app",
+      "https://linkedin-49mj.onrender.com",
+    ],
     credentials: true,
   }),
 );

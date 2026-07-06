@@ -141,7 +141,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       ),
     })),
   loadFeedPage: async (append = false) => {
-    const nextPage = append ? get().page + 1 : 0;
+    const state = get();
+    if (state.isFeedLoading || state.isLoadingMore) return;
+    if (append && !state.hasMore) return;
+
+    const nextPage = append ? state.page + 1 : 0;
     set({ isFeedLoading: !append, isLoadingMore: append });
 
     try {
@@ -151,11 +155,12 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       const backendPosts = response.data.posts ?? response.data ?? [];
       const fetchedPosts = backendPosts.map(formatPost);
+      const hasMore = response.data.hasMore ?? fetchedPosts.length === 10;
 
       set((state) => ({
         posts: append ? [...state.posts, ...fetchedPosts] : fetchedPosts,
         page: nextPage,
-        hasMore: response.data.hasMore ?? fetchedPosts.length === 10,
+        hasMore,
         isFeedLoading: false,
         isLoadingMore: false,
       }));
